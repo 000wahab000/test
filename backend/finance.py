@@ -4,14 +4,14 @@ def project_cost(capital: float) -> float:
 def select_scheme(project_cost_val: float) -> dict:
     if project_cost_val <= 140000:
         return {
-            "scheme_name": "micro_finance",
+            "scheme_name": "NSFDC Special SC Loan",
             "max_loan": 125000.0,
             "interest_rate": 0.065,
             "tenure_years": 3,
             "moratorium_months": 3
         }
     return {
-        "scheme_name": "term_loan",
+        "scheme_name": "PMEGP SC Special Loan",
         "max_loan": 4500000.0,
         "interest_rate": 0.08,
         "tenure_years": 7,
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     assert pc == 1000000.0, f"Expected 1000000.0, got {pc}"
     
     sch = select_scheme(pc)
-    assert sch["scheme_name"] == "term_loan", f"Expected term_loan, got {sch['scheme_name']}"
+    assert sch["scheme_name"] == "PMEGP SC Special Loan", f"Expected PMEGP SC Special Loan, got {sch['scheme_name']}"
     
     loan = loan_amount(pc)
     assert loan == 900000.0, f"Expected 900000.0, got {loan}"

@@ -54,6 +54,7 @@ class EvaluateRequest(BaseModel):
     village: str
     business_category: str
     capital: float
+    government_scheme: Optional[str] = None
 
 class NarrativeRequest(BaseModel):
     financial_summary: dict
@@ -121,7 +122,8 @@ def evaluate_feasibility(req: EvaluateRequest):
                 "district": req.district,
                 "village": req.village,
                 "business_category": req.business_category,
-                "capital": req.capital
+                "capital": req.capital,
+                "government_scheme": req.government_scheme
             },
             "financial_summary": {
                 "capital": req.capital,
