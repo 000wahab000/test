@@ -1,4 +1,17 @@
 import React, { useState, useEffect } from 'react'
+import { SC_SCHEMES } from './scSchemes'
+
+function Tooltip({ text }) {
+  return (
+    <span className="relative group inline-flex items-center ml-1.5 cursor-pointer">
+      <span className="text-slate-400 hover:text-slate-600 text-xs font-semibold">ℹ️</span>
+      <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block w-64 p-3 bg-slate-900 text-white text-[11px] font-normal rounded-xl shadow-2xl z-50 leading-tight border border-slate-700 pointer-events-none normal-case">
+        {text}
+        <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></span>
+      </span>
+    </span>
+  )
+}
 
 export const BUSINESS_CATEGORIES = [
   { id: 'Grocery Store & Provision Shop', label: '🛒 Grocery Store & Provision Shop' },
@@ -26,6 +39,7 @@ export default function Form({ onSubmit, isLoading, onBackToHome }) {
   const [selectedDistrict, setSelectedDistrict] = useState('')
   const [selectedVillage, setSelectedVillage] = useState('')
   const [category, setCategory] = useState(BUSINESS_CATEGORIES[0].id)
+  const [selectedScheme, setSelectedScheme] = useState(SC_SCHEMES[0].name)
   const [capital, setCapital] = useState('100000')
   const [error, setError] = useState('')
 
@@ -64,7 +78,8 @@ export default function Form({ onSubmit, isLoading, onBackToHome }) {
       district: selectedDistrict,
       village: selectedVillage,
       business_category: category,
-      capital: val
+      capital: val,
+      government_scheme: selectedScheme
     })
   }
 
@@ -154,6 +169,24 @@ export default function Form({ onSubmit, isLoading, onBackToHome }) {
             {BUSINESS_CATEGORIES.map(cat => (
               <option key={cat.id} value={cat.id}>
                 {cat.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center">
+            <span>Government Scheme (SC category)</span>
+            <Tooltip text="Eligibility and income limits vary by scheme and state — verify on the Gov. Schemes section" />
+          </label>
+          <select
+            value={selectedScheme}
+            onChange={(e) => setSelectedScheme(e.target.value)}
+            className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium"
+          >
+            {SC_SCHEMES.map(sch => (
+              <option key={sch.id} value={sch.name}>
+                {sch.name} ({sch.criteria})
               </option>
             ))}
           </select>
