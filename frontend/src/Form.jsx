@@ -1,11 +1,31 @@
 import React, { useState, useEffect } from 'react'
 
-export default function Form({ onSubmit, isLoading }) {
+export const BUSINESS_CATEGORIES = [
+  { id: 'Grocery Store & Provision Shop', label: '🛒 Grocery Store & Provision Shop' },
+  { id: 'Tiles, Bricks & Building Materials Unit', label: '🧱 Tiles, Bricks & Building Materials Unit' },
+  { id: 'Flour Mill (Atta Chakki)', label: '🌾 Flour Mill (Atta Chakki)' },
+  { id: 'Dairy Farm & Milk Collection Center', label: '🐄 Dairy Farm & Milk Collection Center' },
+  { id: 'Clothing, Textile & Tailoring Shop', label: '👕 Clothing, Textile & Tailoring Shop' },
+  { id: 'Poultry Farming & Hatchery', label: '🐔 Poultry Farming & Hatchery' },
+  { id: 'Edible Oil Extraction Unit', label: '🛢️ Edible Oil Extraction Unit' },
+  { id: 'Seed, Fertilizer & Agricultural Shop', label: '🌱 Seed, Fertilizer & Agricultural Shop' },
+  { id: 'Electronics & Mobile Repair Shop', label: '📱 Electronics & Mobile Repair Shop' },
+  { id: 'Bakery, Sweets & Confectionery Unit', label: '🍞 Bakery, Sweets & Confectionery Unit' },
+  { id: 'Carpentry & Wooden Furniture Workshop', label: '🪵 Carpentry & Wooden Furniture Workshop' },
+  { id: 'Auto, Tractor & Machinery Repair Shop', label: '🚜 Auto, Tractor & Machinery Repair Shop' },
+  { id: 'Medical & Pharmacy Retail Store', label: '💊 Medical & Pharmacy Retail Store' },
+  { id: 'Spice Processing & Grinding Unit', label: '🌶️ Spice Processing & Grinding Unit' },
+  { id: 'Goat & Livestock Husbandry', label: '🐐 Goat & Livestock Husbandry' },
+  { id: 'Welding & Hardware Fabrication Shop', label: '🛠️ Welding & Hardware Fabrication Shop' },
+  { id: 'General Hardware & Electrical Store', label: '🔌 General Hardware & Electrical Store' }
+]
+
+export default function Form({ onSubmit, isLoading, onBackToHome }) {
   const [locations, setLocations] = useState({ states: [], districts: [], villages: [] })
   const [selectedState, setSelectedState] = useState('')
   const [selectedDistrict, setSelectedDistrict] = useState('')
   const [selectedVillage, setSelectedVillage] = useState('')
-  const [category, setCategory] = useState('agro-processing')
+  const [category, setCategory] = useState(BUSINESS_CATEGORIES[0].id)
   const [capital, setCapital] = useState('100000')
   const [error, setError] = useState('')
 
@@ -49,21 +69,36 @@ export default function Form({ onSubmit, isLoading }) {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
-      <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
-        <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">1</span>
-        <h2 className="text-lg font-bold text-slate-800">Your Inputs</h2>
+    <div className="bg-white rounded-3xl shadow-lg border border-slate-200 p-8 space-y-6 max-w-xl mx-auto text-left">
+      <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div className="flex items-center space-x-3">
+          <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">1</span>
+          <h2 className="text-xl font-extrabold text-slate-900">Your Inputs</h2>
+        </div>
+        {onBackToHome && (
+          <button
+            type="button"
+            onClick={onBackToHome}
+            className="text-xs text-slate-500 hover:text-slate-800 font-medium cursor-pointer"
+          >
+            ← Back to Home
+          </button>
+        )}
       </div>
 
+      <p className="text-xs text-slate-500 font-normal">
+        Select your location, business type, and available margin capital to compute financial feasibility and local market suitability.
+      </p>
+
       {error && (
-        <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold p-3 rounded-lg">
+        <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold p-3.5 rounded-xl">
           ⚠️ {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">State</label>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5">State</label>
           <select
             value={selectedState}
             onChange={(e) => {
@@ -71,7 +106,7 @@ export default function Form({ onSubmit, isLoading }) {
               const availDistricts = locations.districts.filter(d => d.state === e.target.value)
               if (availDistricts.length > 0) setSelectedDistrict(availDistricts[0].district)
             }}
-            className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium"
           >
             {locations.states.map(s => (
               <option key={s} value={s}>{s}</option>
@@ -80,7 +115,7 @@ export default function Form({ onSubmit, isLoading }) {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">District</label>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5">District</label>
           <select
             value={selectedDistrict}
             onChange={(e) => {
@@ -88,7 +123,7 @@ export default function Form({ onSubmit, isLoading }) {
               const availVillages = locations.villages.filter(v => v.district === e.target.value)
               if (availVillages.length > 0) setSelectedVillage(availVillages[0].village)
             }}
-            className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium"
           >
             {filteredDistricts.map(d => (
               <option key={d} value={d}>{d}</option>
@@ -97,11 +132,11 @@ export default function Form({ onSubmit, isLoading }) {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Village</label>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5">Village / Place</label>
           <select
             value={selectedVillage}
             onChange={(e) => setSelectedVillage(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium"
           >
             {filteredVillages.map(v => (
               <option key={v.id || v.village} value={v.village}>{v.village}</option>
@@ -110,64 +145,57 @@ export default function Form({ onSubmit, isLoading }) {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-2">Business Category</label>
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              { id: 'dairy', label: 'Dairy', icon: '🐄' },
-              { id: 'retail', label: 'Retail', icon: '🛒' },
-              { id: 'agro-processing', label: 'Agro-processing', icon: '🌱' }
-            ].map(cat => (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => setCategory(cat.id)}
-                className={`p-3 rounded-lg border text-center text-xs font-semibold flex flex-col items-center justify-center space-y-1 transition-all ${
-                  category === cat.id
-                    ? 'border-emerald-500 bg-emerald-50 text-emerald-800 ring-2 ring-emerald-500'
-                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
-                }`}
-              >
-                <span className="text-xl">{cat.icon}</span>
-                <span>{cat.label}</span>
-              </button>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5">Business Category</label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium"
+          >
+            {BUSINESS_CATEGORIES.map(cat => (
+              <option key={cat.id} value={cat.id}>
+                {cat.label}
+              </option>
             ))}
-          </div>
+          </select>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-600 mb-1">Available Margin Capital (₹)</label>
-          <input
-            type="number"
-            min="10000"
-            value={capital}
-            onChange={(e) => {
-              setCapital(e.target.value)
-              setError('')
-            }}
-            placeholder="Min ₹10,000"
-            className="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            required
-          />
+          <label className="block text-xs font-bold text-slate-700 mb-1.5">Available Margin Capital (₹)</label>
+          <div className="relative">
+            <span className="absolute left-3.5 top-2.5 text-slate-400 text-sm font-semibold">₹</span>
+            <input
+              type="number"
+              min="10000"
+              value={capital}
+              onChange={(e) => {
+                setCapital(e.target.value)
+                setError('')
+              }}
+              placeholder="Min ₹10,000"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-8 pr-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-semibold"
+              required
+            />
+          </div>
         </div>
 
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-2.5 px-4 rounded-lg shadow transition-all flex items-center justify-center space-x-2 text-sm disabled:opacity-50"
+          className="w-full bg-[#1e293b] hover:bg-[#0f172a] text-white font-bold py-3.5 px-4 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2 text-sm disabled:opacity-50 cursor-pointer"
         >
           {isLoading ? (
-            <span>Generating Report...</span>
+            <span>Evaluating Feasibility...</span>
           ) : (
             <>
               <span>✨</span>
-              <span>Generate Report</span>
+              <span>Generate Feasibility Report</span>
             </>
           )}
         </button>
       </form>
 
-      <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-500 space-y-1">
-        <p className="font-semibold text-slate-600">Decision Support Only</p>
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs text-slate-500 space-y-1">
+        <p className="font-semibold text-slate-700">Decision Support Only</p>
         <p>This tool provides decision support only. It is not a loan guarantee. Eligibility is subject to scheme verification.</p>
       </div>
     </div>
