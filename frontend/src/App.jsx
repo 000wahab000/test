@@ -72,18 +72,6 @@ export default function App() {
                 onClick={() => {
                   setView('landing')
                   setTimeout(() => {
-                    const el = document.getElementById('heatmap')
-                    if (el) el.scrollIntoView({ behavior: 'smooth' })
-                  }, 100)
-                }}
-                className="hover:text-emerald-600 transition-colors cursor-pointer"
-              >
-                Vicinity Heatmap
-              </button>
-              <button
-                onClick={() => {
-                  setView('landing')
-                  setTimeout(() => {
                     const el = document.getElementById('how-it-works')
                     if (el) el.scrollIntoView({ behavior: 'smooth' })
                   }, 100)

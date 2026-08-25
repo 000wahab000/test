@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+backend/__pycache__/
+*.log
+node_modules/
+dist/
+.env
+data/*.csv
+!data/raw/*.csv
+

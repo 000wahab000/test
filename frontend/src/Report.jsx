@@ -37,20 +37,44 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
 
   const { input, financial_summary, repayment_schedule, village_context, fit_result } = data
   const { scheme } = financial_summary
+  const pop = village_context?.total_population || 0
 
   const [activeTab, setActiveTab] = useState('overview') // 'overview' | 'market' | 'financial' | 'schemes' | 'insights'
   const [language, setLanguage] = useState('en')
   const [narrativeData, setNarrativeData] = useState(null)
   const [loadingNarrative, setLoadingNarrative] = useState(false)
 
+<<<<<<< ours
   const selectedSchemeObj = SC_SCHEMES.find(s => s.name === input.government_scheme) || {
     name: input.government_scheme || 'No SC Scheme Selected',
     criteria: 'Eligibility rules apply'
   }
+=======
+  const [rankingData, setRankingData] = useState([])
+  const [loadingRanking, setLoadingRanking] = useState(false)
+>>>>>>> theirs
 
   useEffect(() => {
     fetchNarrative(language)
   }, [language, data])
+
+  useEffect(() => {
+    if (input?.business_category) {
+      setLoadingRanking(true)
+      fetch(`http://localhost:8000/pincode-ranking?category=${encodeURIComponent(input.business_category)}`)
+        .then(res => res.json())
+        .then(resData => setRankingData(resData))
+        .catch(err => console.error('Failed to load pincode ranking:', err))
+        .finally(() => setLoadingRanking(false))
+    }
+  }, [input?.business_category])
+
+  function getOrdinal(n) {
+    if (!n || n <= 0) return ''
+    const s = ['th', 'st', 'nd', 'rd']
+    const v = n % 100
+    return n + (s[(v - 20) % 10] || s[v] || s[0])
+  }
 
   const fetchNarrative = (lang) => {
     setLoadingNarrative(true)
@@ -96,11 +120,11 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
           <div className="h-6 w-px bg-slate-200 hidden sm:block" />
 
           <button
-            onClick={onBackToLanding || onBack}
+            onClick={onBack}
             className="bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-800 font-extrabold text-xs px-4 py-2 rounded-full shadow-2xs transition-all flex items-center space-x-2 cursor-pointer"
           >
             <span>←</span>
-            <span>Back to Landing Page</span>
+            <span>Back to Input Form</span>
           </button>
         </div>
 
@@ -244,10 +268,16 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
                   <span className="text-[10px] font-black text-emerald-700 uppercase tracking-widest block">FINANCIAL MARGIN MATH</span>
                   <h3 className="text-xl font-black text-slate-900">Financial Structuring & Loan Details</h3>
                 </div>
-                <span className="text-xs font-black text-emerald-800 bg-emerald-50 px-3.5 py-1.5 rounded-full border border-emerald-300">
-                  Formula: Savings / 0.1
-                </span>
               </div>
+
+              {narrativeData?.narrative && (
+                <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 space-y-1 text-left">
+                  <p className="text-xs font-extrabold text-slate-700">Practical Summary for Entrepreneurs</p>
+                  <p className="text-xs text-slate-600 leading-relaxed font-medium">{narrativeData.narrative}</p>
+                </div>
+              )}
+
+
 
               {/* 6 Grid Metric Cards (Uniform Height, Sizing, Hierarchy) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -508,44 +538,110 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
 
           {/* TAB 2: MARKET & VICINITY ANALYSIS */}
           {(activeTab === 'overview' || activeTab === 'market') && (
-            <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-200 shadow-sm space-y-5">
-              <h3 className="text-lg font-black text-slate-900 border-b border-slate-100 pb-3 flex items-center space-x-2">
-                <span>📍 Village Infrastructure & Market Analysis</span>
-              </h3>
+            <div className="space-y-6">
+              <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-200 shadow-sm space-y-5">
+                <h3 className="text-lg font-black text-slate-900 border-b border-slate-100 pb-3 flex items-center space-x-2">
+                  <span>📍 Village Infrastructure & Market Access</span>
+                </h3>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200 space-y-3">
-                  <p className="text-xs font-black text-slate-900 uppercase tracking-wider">Proximity & Connectivity</p>
-                  <div className="space-y-2 text-xs font-semibold">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-600">Nearest Town Distance</span>
-                      <DistanceBadge distance={village_context.nearest_town_distance} />
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-600">Sub-District HQ Distance</span>
-                      <DistanceBadge distance={village_context.sub_district_hq_distance} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200 space-y-3">
+                    <p className="text-xs font-black text-slate-900 uppercase tracking-wider">Proximity & Connectivity</p>
+                    <div className="space-y-2 text-xs font-semibold">
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-600">Nearest Town Distance</span>
+                        <DistanceBadge distance={village_context.nearest_town_distance} />
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-600">Sub-District HQ Distance</span>
+                        <DistanceBadge distance={village_context.sub_district_hq_distance} />
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200 space-y-3">
-                  <p className="text-xs font-black text-slate-900 uppercase tracking-wider">Market Access</p>
-                  <div className="space-y-2 text-xs font-semibold">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-600">Mandi / Weekly Haat</span>
-                      <span className="font-black text-slate-900">
-                        {village_context.mandis_market_status === '1' || village_context.weekly_haat_status === '1' ? '✅ Available' : '❌ Missing'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-600">PDS Outlet Access</span>
-                      <span className="font-black text-slate-900">
-                        {village_context.pds_status === '1' ? '✅ Available' : '❌ Missing'}
-                      </span>
+                  <div className="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200 space-y-3">
+                    <p className="text-xs font-black text-slate-900 uppercase tracking-wider">Market Access</p>
+                    <div className="space-y-2 text-xs font-semibold">
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-600">Mandi / Weekly Haat</span>
+                        <span className="font-black text-slate-900">
+                          {village_context.mandis_market_status === '1' || village_context.weekly_haat_status === '1' ? '✅ Available' : '❌ Missing'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-slate-600">PDS Outlet Access</span>
+                        <span className="font-black text-slate-900">
+                          {village_context.pds_status === '1' ? '✅ Available' : '❌ Missing'}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+
+              {/* Registered MSME Business Density Ranking Across Pincodes */}
+              {(() => {
+                const currentPin = village_context?.pincode || ''
+                const currentRankIndex = rankingData.findIndex(r => r.pincode === currentPin)
+                const currentRank = currentRankIndex >= 0 ? currentRankIndex + 1 : null
+                const totalPincodes = rankingData.length
+                const maxCount = rankingData[0]?.count || 1
+
+                return (
+                  <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-200 shadow-sm space-y-5">
+                    <div className="border-b border-slate-100 pb-3">
+                      <h3 className="text-lg font-black text-slate-900 flex items-center space-x-2">
+                        <span>📊 Registered Business Density by Pincode (Udyam/MSME Data)</span>
+                      </h3>
+                      <p className="text-xs text-slate-600 font-semibold mt-1 leading-relaxed">
+                        <span className="capitalize">{input.business_category}</span> enterprise density across Jalgaon district — your village's pincode <span className="font-extrabold text-slate-900">({currentPin || 'N/A'})</span> ranks <span className="font-black text-emerald-700">{currentRank ? getOrdinal(currentRank) : 'N/A'}</span> of {totalPincodes} pincodes.
+                      </p>
+                    </div>
+
+                    {loadingRanking ? (
+                      <div className="p-6 text-center text-xs text-slate-400 font-bold">
+                        <span className="inline-block animate-spin">⏳</span> Loading pincode density ranking...
+                      </div>
+                    ) : (
+                      <div className="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+                        {rankingData.map((item, idx) => {
+                          const isCurrent = item.pincode === currentPin
+                          const pct = Math.max((item.count / maxCount) * 100, 3)
+                          return (
+                            <div
+                              key={item.pincode}
+                              className={`p-3 rounded-2xl border transition-all flex items-center gap-3 text-xs ${
+                                isCurrent
+                                  ? 'bg-emerald-50/90 border-emerald-500 shadow-xs font-bold text-emerald-950 ring-2 ring-emerald-400/50'
+                                  : 'bg-slate-50/80 border-slate-200 text-slate-700 hover:bg-slate-100'
+                              }`}
+                            >
+                              <span className="w-8 text-[11px] font-black text-slate-400 text-right">#{idx + 1}</span>
+                              <div className="w-20 font-mono font-bold flex items-center gap-1">
+                                <span>{item.pincode}</span>
+                                {isCurrent && (
+                                  <span className="text-[9px] bg-emerald-600 text-white px-1.5 py-0.5 rounded-full font-sans uppercase font-extrabold shadow-2xs">YOU</span>
+                                )}
+                              </div>
+                              <div className="flex-1 bg-slate-200/80 h-3.5 rounded-full overflow-hidden relative">
+                                <div
+                                  className={`h-full rounded-full transition-all duration-500 ${
+                                    isCurrent ? 'bg-emerald-600' : 'bg-slate-500'
+                                  }`}
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
+                              <span className="w-16 text-right font-black text-slate-900">
+                                {item.count.toLocaleString('en-IN')} units
+                              </span>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )
+              })()}
             </div>
           )}
 
