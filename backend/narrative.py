@@ -302,7 +302,7 @@ if __name__ == "__main__":
 
     lasur = dict(cursor.execute("SELECT * FROM villages WHERE village = 'Lasur'").fetchone())
     
-    fin = {"capital": 100000.0, "loan_amount": 900000.0, "scheme": {"scheme_name": "term_loan"}}
+    fin = {"capital": 100000.0, "loan_amount": 900000.0, "scheme": {"scheme_name": "PMEGP SC Special Loan"}}
     
     print("==========================================================================")
     print("SIDE-BY-SIDE COMPARISON FOR THE SAME VILLAGE (Lasur) BETWEEN DAIRY & AGRO-PROCESSING")

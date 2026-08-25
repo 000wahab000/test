@@ -353,6 +353,153 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
             </div>
           )}
 
+          {/* TAB 4: GOVERNMENT SCHEMES */}
+          {(activeTab === 'overview' || activeTab === 'schemes') && (
+            <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-200 shadow-sm space-y-6">
+              <div className="border-b border-slate-100 pb-4">
+                <span className="text-[10px] font-black text-amber-600 tracking-widest uppercase block">
+                  🇮🇳 TARGETED GOVERNMENT SCHEMES FOR SC
+                </span>
+                <h3 className="text-xl font-black text-slate-900">
+                  Government Loan & Credit Schemes for SC
+                </h3>
+              </div>
+              <p className="text-sm text-slate-600 font-semibold leading-relaxed">
+                The following are specific central and state government credit and subsidy schemes designed for Scheduled Caste (SC) entrepreneurs starting or expanding rural business ventures. We have matched them against your calculated Project Cost of <strong>₹{financial_summary.project_cost.toLocaleString('en-IN')}</strong>.
+              </p>
+
+              <div className="space-y-4">
+                {[
+                  {
+                    name: 'NSFDC Special Loan Scheme for SC Entrepreneurs',
+                    category: 'Targeted SC Category (Income < ₹5 Lakh)',
+                    maxLoan: 'Up to ₹15 Lakh',
+                    fundingCover: '90% Project Cost Financed',
+                    subsidy: 'Concessional Interest (4% - 6% p.a.)',
+                    collateral: 'No Hard Collateral Required',
+                    icon: '🏛️',
+                    description: 'National Scheduled Castes Finance & Development Corporation scheme providing concessional credit for SC micro-entrepreneurs with annual household income below ₹5 Lakh.',
+                    checkEligibility: (pc) => pc <= 1500000,
+                    isMatched: scheme.scheme_name.toLowerCase().includes('nsfdc')
+                  },
+                  {
+                    name: 'PM-AJAY (Pradhan Mantri Anusuchit Jaati Abhyuday Yojana)',
+                    category: 'SC Self-Employment & Income Generation',
+                    maxLoan: 'Up to ₹10 Lakh',
+                    fundingCover: '90% Scheme Support',
+                    subsidy: '50% Financial Grant / Subsidy',
+                    collateral: 'Government Backed Guarantee',
+                    icon: '🌾',
+                    description: 'Special central scheme empowering Scheduled Caste families below ₹5 Lakh income through grant-in-aid, skill training, and credit support for rural business setups.',
+                    checkEligibility: (pc) => pc <= 1000000,
+                    isMatched: scheme.scheme_name.toLowerCase().includes('ajay')
+                  },
+                  {
+                    name: 'VCF-SC (Venture Capital Fund for Scheduled Castes)',
+                    category: 'SC Micro & Small Business Promotion',
+                    maxLoan: '₹15 Lakh to ₹5 Crore',
+                    fundingCover: '75% Financial Support',
+                    subsidy: 'Soft Loan @ 6% Interest',
+                    collateral: 'Asset Hypothecation Only',
+                    icon: '🏭',
+                    description: 'Government fund specifically promoting entrepreneurship among Scheduled Castes who want to establish manufacturing, processing, or service units.',
+                    checkEligibility: (pc) => pc >= 150000 && pc <= 50000000,
+                    isMatched: scheme.scheme_name.toLowerCase().includes('vcf')
+                  },
+                  {
+                    name: 'PMEGP Special Category for SC / Low Income',
+                    category: 'Rural SC Special Subsidy',
+                    maxLoan: 'Up to ₹50 Lakh',
+                    fundingCover: '90% - 95% Bank Financing',
+                    subsidy: '35% Rural Capital Subsidy for SC',
+                    collateral: 'CGTMSE Cover Eligible',
+                    icon: '🛡️',
+                    description: 'Prime Minister Employment Generation Programme providing enhanced 35% capital subsidy in rural areas for SC borrowers with minimal margin contribution (5%).',
+                    checkEligibility: (pc) => pc <= 5000000,
+                    isMatched: scheme.scheme_name.toLowerCase().includes('pmegp')
+                  },
+                  {
+                    name: 'Stand-Up India Scheme (SC / ST / Women)',
+                    category: 'SC Greenfield Business Setup',
+                    maxLoan: '₹10 Lakh to ₹1 Crore',
+                    fundingCover: '75% Composite Loan',
+                    subsidy: 'Margin Money Support',
+                    collateral: 'Credit Guarantee Scheme Cover',
+                    icon: '🚀',
+                    description: 'Mandatory bank lending scheme specifically reserving credit for SC & ST entrepreneurs to establish new enterprises in manufacturing, services, or trading.',
+                    checkEligibility: (pc) => pc >= 1000000 && pc <= 10000000,
+                    isMatched: scheme.scheme_name.toLowerCase().includes('stand')
+                  }
+                ].map((s, idx) => {
+                  const eligible = s.checkEligibility(financial_summary.project_cost);
+                  return (
+                    <div
+                      key={idx}
+                      className={`p-5 rounded-2xl border-2 transition-all flex flex-col md:flex-row items-start justify-between gap-4 ${
+                        s.isMatched
+                          ? 'bg-amber-50/50 border-amber-400 shadow-md ring-2 ring-amber-400/20'
+                          : eligible
+                          ? 'bg-slate-50/50 border-slate-200 hover:border-slate-300'
+                          : 'bg-slate-100/40 border-slate-200 opacity-60'
+                      }`}
+                    >
+                      <div className="space-y-3 max-w-2xl text-left">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-[10px] font-black bg-white text-slate-800 border border-slate-200 px-2.5 py-0.5 rounded-full shadow-2xs">
+                            {s.category}
+                          </span>
+                          {s.isMatched && (
+                            <span className="text-[10px] font-black bg-amber-600 text-white px-2.5 py-0.5 rounded-full shadow-2xs">
+                              ⭐ CURRENTLY SELECTED
+                            </span>
+                          )}
+                          {eligible ? (
+                            <span className="text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-full shadow-2xs">
+                              ✓ ELIGIBLE
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-black bg-rose-50 text-rose-800 border border-rose-200 px-2.5 py-0.5 rounded-full">
+                              ✕ NOT APPLICABLE
+                            </span>
+                          )}
+                        </div>
+
+                        <h4 className="text-base font-black text-slate-900 flex items-center gap-2">
+                          <span className="text-xl">{s.icon}</span>
+                          <span>{s.name}</span>
+                        </h4>
+
+                        <p className="text-xs text-slate-600 font-semibold leading-relaxed">
+                          {s.description}
+                        </p>
+
+                        <div className="grid grid-cols-3 gap-2 pt-1.5 text-[11px] font-bold text-slate-700">
+                          <div className="bg-white p-2 rounded-xl border border-slate-200 shadow-2xs">
+                            <span className="text-[9px] text-slate-400 block font-black">MAX CEILING</span>
+                            <span className="font-extrabold text-slate-800">{s.maxLoan}</span>
+                          </div>
+                          <div className="bg-white p-2 rounded-xl border border-slate-200 shadow-2xs">
+                            <span className="text-[9px] text-slate-400 block font-black">FUNDING COVER</span>
+                            <span className="font-extrabold text-slate-800">{s.fundingCover}</span>
+                          </div>
+                          <div className="bg-white p-2 rounded-xl border border-slate-200 shadow-2xs">
+                            <span className="text-[9px] text-slate-400 block font-black">SUBSIDY / INTEREST</span>
+                            <span className="font-extrabold text-emerald-700">{s.subsidy}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-end justify-center min-w-[120px] self-stretch border-t md:border-t-0 md:border-l border-slate-200/80 pt-3 md:pt-0 md:pl-4 text-xs font-semibold">
+                        <span className="text-[10px] text-slate-400 block font-bold mb-1">COLLATERAL</span>
+                        <span className="font-black text-indigo-700 text-right">{s.collateral}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* TAB 2: MARKET & VICINITY ANALYSIS */}
           {(activeTab === 'overview' || activeTab === 'market') && (
             <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-200 shadow-sm space-y-5">
