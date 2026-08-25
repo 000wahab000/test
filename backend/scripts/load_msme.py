@@ -13,15 +13,8 @@ CSV_PATH = r"d:\wahab stuff\wahab code\test\data\8b68ae56-84cf-4728-a0a6-1be1102
 
 
 def clean_pincode(pincode_raw: str) -> str:
-    if not pincode_raw:
-        return ""
-    p_str = str(pincode_raw).strip()
-    if p_str.endswith(".0"):
-        p_str = p_str[:-2]
-    p_str = p_str.zfill(6)
-    if len(p_str) == 6 and p_str.isdigit():
-        return p_str
-    return ""
+    p_str = str(pincode_raw or "").split(".")[0].strip().zfill(6)
+    return p_str if len(p_str) == 6 and p_str.isdigit() else ""
 
 
 def load_msme():

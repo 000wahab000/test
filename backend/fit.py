@@ -6,17 +6,14 @@ JALGAON_IRRIGATED_P75 = 550.7  # 75th percentile (ha)
 
 def check_fit(business_category: str, village_data: dict) -> dict:
     raw_cat = (business_category or "Retail").strip()
-    cat = raw_cat.lower()
-    
-    dairy_keywords = ["dairy", "milk", "cattle", "poultry", "goat", "fish", "livestock", "animal", "husbandry"]
-    agro_keywords = ["agro", "mill", "flour", "spice", "oil", "seed", "processing", "bakery", "food", "confectionery", "atta", "fertilizer"]
-    
-    if any(k in cat for k in dairy_keywords):
-        cat_type = "dairy"
-    elif any(k in cat for k in agro_keywords):
-        cat_type = "agro-processing"
-    else:
-        cat_type = "retail"
+    cat_type = raw_cat.lower()
+    if cat_type not in ("dairy", "agro-processing", "retail"):
+        if any(k in cat_type for k in ["dairy", "milk", "cattle", "poultry", "goat", "fish", "livestock", "husbandry"]):
+            cat_type = "dairy"
+        elif any(k in cat_type for k in ["agro", "mill", "flour", "spice", "oil", "processing", "bakery", "food", "confectionery"]):
+            cat_type = "agro-processing"
+        else:
+            cat_type = "retail"
     
     irrigated = float(village_data.get("irrigated_area", 0) or 0)
     net_sown = float(village_data.get("net_area_sown", 0) or 0)

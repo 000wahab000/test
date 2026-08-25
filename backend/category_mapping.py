@@ -19,16 +19,7 @@ CATEGORY_MAP = {
 }
 
 def map_category(category_input: str) -> str:
-    """
-    Maps a frontend business category string to one of the 4 backend keys:
-    'dairy', 'retail', 'agro-processing', 'other'.
-    If the category is already one of the 4 keys, returns it directly.
-    """
     if not category_input:
         return "other"
-    
-    cat_lower = category_input.strip().lower()
-    if cat_lower in ("dairy", "retail", "agro-processing", "other"):
-        return cat_lower
-        
-    return CATEGORY_MAP.get(category_input.strip(), "other")
+    val = category_input.strip()
+    return val.lower() if val.lower() in ("dairy", "retail", "agro-processing", "other") else CATEGORY_MAP.get(val, "other")

@@ -140,7 +140,7 @@ def get_ai_narrative(req: NarrativeRequest):
         financial_summary=req.financial_summary,
         village_context=req.village_context,
         fit_result=req.fit_result,
-        language=req.language or "en"
+        language=req.language
     )
 
 @app.get("/pincode-ranking")
@@ -148,12 +148,38 @@ def get_pincode_ranking(category: str = Query(...)):
     mapped_cat = map_category(category)
     with engine.connect() as conn:
         query = text("""
-            SELECT pincode, count 
-            FROM pincode_business_counts 
-            WHERE LOWER(category) = LOWER(:category) 
-            ORDER BY count DESC
+            SELECT 
+                c.pincode, 
+                c.count,
+                (SELECT office_name FROM pincode_localities WHERE pincode = c.pincode AND office_name IS NOT NULL LIMIT 1) AS office_name,
+                (SELECT GROUP_CONCAT(DISTINCT village_locality) FROM (SELECT village_locality FROM pincode_localities WHERE pincode = c.pincode LIMIT 4)) AS localities
+            FROM pincode_business_counts c 
+            WHERE LOWER(c.category) = LOWER(:category) 
+            ORDER BY c.count DESC
         """)
         rows = conn.execute(query, {"category": mapped_cat}).mappings().all()
         return [dict(r) for r in rows]
+
+@app.get("/pincode-map")
+def get_pincode_map(category: str = Query(...)):
+    mapped_cat = map_category(category)
+    with engine.connect() as conn:
+        query = text("""
+            SELECT 
+                c.pincode,
+                c.count,
+                coord.latitude,
+                coord.longitude,
+                (SELECT office_name FROM pincode_localities WHERE pincode = c.pincode AND office_name IS NOT NULL LIMIT 1) AS office_name,
+                (SELECT GROUP_CONCAT(DISTINCT village_locality) FROM (SELECT village_locality FROM pincode_localities WHERE pincode = c.pincode LIMIT 4)) AS localities
+            FROM pincode_business_counts c
+            JOIN pincode_coordinates coord ON c.pincode = coord.pincode
+            WHERE LOWER(c.category) = LOWER(:category)
+            ORDER BY c.count DESC;
+        """)
+        rows = conn.execute(query, {"category": mapped_cat}).mappings().all()
+        return [dict(r) for r in rows]
+
+
 
 

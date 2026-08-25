@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import PincodeMap from './PincodeMap'
 
 function Tooltip({ text }) {
   return (
@@ -31,6 +32,18 @@ function DistanceBadge({ distance }) {
   )
 }
 
+const FIT_BADGE_CONFIG = {
+  match: { color: 'bg-emerald-100 text-emerald-900 border-emerald-300 shadow-xs', text: 'GOOD FIT', icon: '✅' },
+  partial: { color: 'bg-amber-100 text-amber-900 border-amber-300 shadow-xs', text: 'RISKY FIT', icon: '⚠️' },
+  mismatch: { color: 'bg-rose-100 text-rose-900 border-rose-300 shadow-xs', text: 'NOT RECOMMENDED', icon: '❌' }
+}
+
+function getOrdinal(n) {
+  if (!n || n <= 0) return ''
+  const s = ['th', 'st', 'nd', 'rd'], v = n % 100
+  return n + (s[(v - 20) % 10] || s[v] || s[0])
+}
+
 export default function Report({ data, onBack, onBackToLanding, onCheckAnother }) {
   if (!data) return null
 
@@ -61,13 +74,6 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
     }
   }, [input?.business_category])
 
-  function getOrdinal(n) {
-    if (!n || n <= 0) return ''
-    const s = ['th', 'st', 'nd', 'rd']
-    const v = n % 100
-    return n + (s[(v - 20) % 10] || s[v] || s[0])
-  }
-
   const fetchNarrative = (lang) => {
     setLoadingNarrative(true)
     fetch('http://localhost:8000/narrative', {
@@ -86,11 +92,7 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
       .finally(() => setLoadingNarrative(false))
   }
 
-  const fitBadgeConfig = {
-    match: { color: 'bg-emerald-100 text-emerald-900 border-emerald-300 shadow-xs', text: 'GOOD FIT', icon: '✅' },
-    partial: { color: 'bg-amber-100 text-amber-900 border-amber-300 shadow-xs', text: 'RISKY FIT', icon: '⚠️' },
-    mismatch: { color: 'bg-rose-100 text-rose-900 border-rose-300 shadow-xs', text: 'NOT RECOMMENDED', icon: '❌' }
-  }[fit_result?.fit] || { color: 'bg-slate-100 text-slate-900 border-slate-300', text: (fit_result?.fit || '').toUpperCase(), icon: '🔍' }
+  const fitBadgeConfig = FIT_BADGE_CONFIG[fit_result?.fit] || { color: 'bg-slate-100 text-slate-900 border-slate-300', text: (fit_result?.fit || '').toUpperCase(), icon: '🔍' }
 
   const moratoriumQuarters = Math.floor(scheme.moratorium_months / 3)
 
@@ -276,7 +278,7 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
                 
                 {/* 1. Total Project Cost */}
                 <div className="bg-slate-50 p-5 rounded-2xl border-2 border-slate-200/90 shadow-2xs space-y-1.5">
-                  <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider block flex items-center">
+                  <span className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider flex items-center">
                     <span>Total Project Cost</span>
                     <Tooltip text="Calculated as Savings / 0.1 (10% Own Contribution)." />
                   </span>
@@ -288,7 +290,7 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
 
                 {/* 2. Govt Loan Amount (90%) */}
                 <div className="bg-emerald-50/80 p-5 rounded-2xl border-2 border-emerald-300/90 shadow-2xs space-y-1.5">
-                  <span className="text-[11px] font-extrabold text-emerald-900 uppercase tracking-wider block flex items-center">
+                  <span className="text-[11px] font-extrabold text-emerald-900 uppercase tracking-wider flex items-center">
                     <span>90% Govt Loan Amount</span>
                     <Tooltip text="90% of total project cost funded via government credit scheme." />
                   </span>
@@ -487,6 +489,14 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
                   </div>
                 )
               })()}
+
+              {/* Geographic Business Density Map (Leaflet) */}
+              <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-200 shadow-sm">
+                <PincodeMap
+                  category={input?.business_category}
+                  currentPincode={village_context?.pincode}
+                />
+              </div>
             </div>
           )}
 

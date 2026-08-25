@@ -15,87 +15,8 @@ and specific 3-digit / 5-digit sub-code overrides.
 # Static 2-digit prefix mapping based on the 81 distinct prefixes in Jalgaon MSME dataset
 NIC_PREFIX_2DIGIT_MAP = {
     "01": "agro-processing",  # Crop and animal production (except dairy sub-codes)
-    "05": "other",            # Mining of coal
-    "06": "other",            # Crude petroleum & natural gas
-    "07": "other",            # Mining of metal ores
-    "08": "other",            # Other mining & quarrying
-    "09": "other",            # Mining support service
     "10": "agro-processing",  # Food products manufacturing (except 105 dairy manufacturing)
-    "11": "other",            # Beverage manufacturing (mineral water, soft drinks, aerated drinks, alcohol)
-    "12": "other",            # Tobacco products
-    "13": "other",            # Manufacture of textiles
-    "14": "other",            # Wearing apparel
-    "15": "other",            # Leather products
-    "16": "other",            # Wood products
-    "17": "other",            # Paper products
-    "18": "other",            # Printing & reproduction
-    "19": "other",            # Coke & refined petroleum
-    "20": "other",            # Chemical products
-    "21": "other",            # Pharmaceuticals
-    "22": "other",            # Rubber & plastics
-    "23": "other",            # Non-metallic mineral products
-    "24": "other",            # Basic metals
-    "25": "other",            # Fabricated metal products
-    "26": "other",            # Computer & electronic products
-    "27": "other",            # Electrical equipment
-    "28": "other",            # Machinery & equipment
-    "29": "other",            # Motor vehicles
-    "30": "other",            # Other transport equipment
-    "31": "other",            # Furniture
-    "32": "other",            # Other manufacturing
-    "33": "other",            # Repair & installation of machinery
-    "35": "other",            # Electricity, gas, steam supply
-    "36": "other",            # Water collection & supply
-    "37": "other",            # Sewerage
-    "38": "other",            # Waste collection & treatment
-    "39": "other",            # Remediation activities
-    "41": "other",            # Construction of buildings
-    "42": "other",            # Civil engineering
-    "43": "other",            # Specialized construction
-    "45": "other",            # Wholesale/retail of motor vehicles
-    "46": "other",            # Wholesale trade (except 46302 dairy wholesale)
     "47": "retail",           # Retail trade (except 47211 dairy retail)
-    "49": "other",            # Land transport
-    "50": "other",            # Water transport
-    "51": "other",            # Air transport
-    "52": "other",            # Warehousing & transport support
-    "53": "other",            # Postal & courier activities
-    "55": "other",            # Accommodation / Hotels
-    "56": "other",            # Food & beverage service / Restaurants
-    "58": "other",            # Publishing activities
-    "59": "other",            # Motion picture & TV
-    "60": "other",            # Programming & broadcasting
-    "61": "other",            # Telecommunications
-    "62": "other",            # Computer programming & IT consultancy
-    "63": "other",            # Information service activities
-    "64": "other",            # Financial service activities
-    "65": "other",            # Insurance & pension funding
-    "66": "other",            # Financial auxiliary activities
-    "68": "other",            # Real estate activities
-    "69": "other",            # Legal & accounting activities
-    "70": "other",            # Management consultancy
-    "71": "other",            # Architectural & engineering
-    "72": "other",            # Scientific research & development
-    "73": "other",            # Advertising & market research
-    "74": "other",            # Professional, scientific & technical
-    "75": "other",            # Veterinary activities
-    "77": "other",            # Rental & leasing
-    "78": "other",            # Employment activities
-    "79": "other",            # Travel agency & tour operator
-    "80": "other",            # Security & investigation
-    "81": "other",            # Services to buildings & landscape
-    "82": "other",            # Office administrative & support
-    "84": "other",            # Public administration
-    "85": "other",            # Education
-    "86": "other",            # Human health activities
-    "87": "other",            # Residential care
-    "88": "other",            # Social work activities
-    "90": "other",            # Creative, arts & entertainment
-    "91": "other",            # Libraries, archives, museums
-    "93": "other",            # Sports & amusement
-    "94": "other",            # Membership organizations
-    "95": "other",            # Repair of computers & personal goods
-    "96": "other",            # Personal service activities
 }
 
 # Specific 3-digit, 4-digit, or 5-digit sub-code overrides
