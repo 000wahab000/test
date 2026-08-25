@@ -5,7 +5,18 @@ JALGAON_IRRIGATED_P75 = 550.7  # 75th percentile (ha)
 
 
 def check_fit(business_category: str, village_data: dict) -> dict:
-    cat = (business_category or "").strip().lower()
+    raw_cat = (business_category or "Retail").strip()
+    cat = raw_cat.lower()
+    
+    dairy_keywords = ["dairy", "milk", "cattle", "poultry", "goat", "fish", "livestock", "animal", "husbandry"]
+    agro_keywords = ["agro", "mill", "flour", "spice", "oil", "seed", "processing", "bakery", "food", "confectionery", "atta", "fertilizer"]
+    
+    if any(k in cat for k in dairy_keywords):
+        cat_type = "dairy"
+    elif any(k in cat for k in agro_keywords):
+        cat_type = "agro-processing"
+    else:
+        cat_type = "retail"
     
     irrigated = float(village_data.get("irrigated_area", 0) or 0)
     net_sown = float(village_data.get("net_area_sown", 0) or 0)
@@ -17,26 +28,26 @@ def check_fit(business_category: str, village_data: dict) -> dict:
     valid_comms = [c for c in [comm_1, comm_2, comm_3] if c and c.upper() not in ("NA", "N/A", "NONE", "NULL")]
     primary_commodity = valid_comms[0] if valid_comms else None
 
-    if cat in ("dairy", "agro-processing"):
-        biz_title = "Dairy" if cat == "dairy" else "Agro-processing"
+    if cat_type in ("dairy", "agro-processing"):
+        biz_title = raw_cat
         if irrigated >= JALGAON_IRRIGATED_P75:
             fit = "match"
-            headline = f"GOOD FIT — Excellent water resources and farmland to sustain year-round {biz_title.lower()} operations."
-            supp = f"Irrigated area: {irrigated} ha (Top 25% in Jalgaon, threshold >= {JALGAON_IRRIGATED_P75} ha) | Net sown: {net_sown} ha"
+            headline = f"GOOD FIT - Excellent water resources and farmland in the area to sustain year-round {biz_title.lower()} operations."
+            supp = f"Irrigated area: {irrigated} ha (Top 25% in district, threshold >= {JALGAON_IRRIGATED_P75} ha) | Net sown: {net_sown} ha"
             if primary_commodity:
-                supp += f" | Key local crop: {primary_commodity}"
+                supp += f" | Key local commodity: {primary_commodity}"
         elif irrigated >= JALGAON_IRRIGATED_P25:
             fit = "partial"
-            headline = f"RISKY — Moderate water availability may cause seasonal shortages for {biz_title.lower()} operations."
-            supp = f"Irrigated area: {irrigated} ha (Middle range 25th-75th percentile in Jalgaon, {JALGAON_IRRIGATED_P25}-{JALGAON_IRRIGATED_P75} ha) | Net sown: {net_sown} ha"
+            headline = f"RISKY - Moderate water availability may cause seasonal supply shortages for {biz_title.lower()} operations."
+            supp = f"Irrigated area: {irrigated} ha (Middle range 25th-75th percentile, {JALGAON_IRRIGATED_P25}-{JALGAON_IRRIGATED_P75} ha) | Net sown: {net_sown} ha"
             if primary_commodity:
-                supp += f" | Key local crop: {primary_commodity}"
+                supp += f" | Key local commodity: {primary_commodity}"
         else:
             fit = "mismatch"
-            headline = f"NOT RECOMMENDED — Low irrigated land will make sourcing raw materials and fodder difficult during dry months."
+            headline = f"NOT RECOMMENDED - Low irrigated land will make sourcing raw materials difficult during dry months for {biz_title.lower()}."
             supp = f"Irrigated area: {irrigated} ha (Below district 25th percentile of {JALGAON_IRRIGATED_P25} ha) | Net sown: {net_sown} ha"
             if primary_commodity:
-                supp += f" | Key local crop: {primary_commodity}"
+                supp += f" | Key local commodity: {primary_commodity}"
 
         return {
             "fit": fit,
@@ -45,7 +56,8 @@ def check_fit(business_category: str, village_data: dict) -> dict:
             "reason": f"{headline} {supp}"
         }
 
-    elif cat == "retail":
+    else:
+        biz_title = raw_cat
         avail_signals = {"1", "yes", "true", "available"}
         mandi = str(village_data.get("mandis_market_status", "")).strip().lower() in avail_signals
         haat = str(village_data.get("weekly_haat_status", "")).strip().lower() in avail_signals
@@ -53,15 +65,15 @@ def check_fit(business_category: str, village_data: dict) -> dict:
 
         if mandi or haat:
             fit = "match"
-            headline = "GOOD FIT — Active regular market and weekly haat provide steady daily customer footfall."
+            headline = f"GOOD FIT - Active regular market and weekly haat provide steady daily customer footfall for {biz_title.lower()}."
             supp = "Infrastructure present: Active Mandi / Weekly Haat"
         elif pds:
             fit = "partial"
-            headline = "RISKY — Customer traffic is limited and mostly dependent on monthly PDS ration distribution."
+            headline = f"RISKY - Customer traffic is limited and mostly dependent on monthly PDS ration distribution for {biz_title.lower()}."
             supp = "Infrastructure present: PDS ration outlet | No active regular market or weekly haat"
         else:
             fit = "mismatch"
-            headline = "NOT RECOMMENDED — No local market or weekly haat to attract daily retail shoppers."
+            headline = f"NOT RECOMMENDED - No local market or weekly haat in this village to attract daily shoppers for {biz_title.lower()}."
             supp = "Infrastructure missing: No Mandi, Weekly Haat, or PDS ration outlet"
 
         return {
@@ -70,13 +82,6 @@ def check_fit(business_category: str, village_data: dict) -> dict:
             "supporting_data": supp,
             "reason": f"{headline} {supp}"
         }
-
-    return {
-        "fit": "mismatch",
-        "headline": f"NOT RECOMMENDED — Unknown category '{business_category}'.",
-        "supporting_data": "",
-        "reason": f"Unknown business category '{business_category}'."
-    }
 
 
 if __name__ == "__main__":
