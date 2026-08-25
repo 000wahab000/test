@@ -1,4 +1,4 @@
-﻿# METHODOLOGY.md — How We Work on This Project
+# METHODOLOGY.md — How We Work on This Project
 
 > This file lives in `.agents/` so every agent session loads it automatically.
 > It is NOT a feature spec — that is `antigravity_build_spec.md` at the project root.
@@ -152,3 +152,37 @@ A user can:
 6. See the disclaimer: *"Decision support only. Not a loan guarantee. Eligibility subject to scheme verification."*
 
 Nothing more. If it does more than this, something is wrong.
+
+---
+
+## MSME Dataset
+
+- **File Source:** `data.gov.in` — List of MSME Registered Units under UDYAM (Filtered for Jalgaon District, Maharashtra).
+- **File Location:** `data/8b68ae56-84cf-4728-a0a6-1be11028dea7_486885273ba513e60f50451d852a8e23.csv`
+- **Total Row Count:** 165,534 data rows (excluding 1 header row).
+- **NIC JSON Field Structure (`Activities`):**
+  - Stringified JSON array containing objects with keys `NIC5DigitId` (string representing 5-digit NIC code) and `Description` (text description).
+  - Example: `[{"NIC5DigitId":"63992","Description":"Activities of cyber café"}]`
+- **Format Consistency Findings:**
+  - **Valid JSON Array Rows:** ~165,377 rows parse cleanly into JSON lists of 1 or more NIC activity dictionaries.
+  - **Missing / Empty Activities:** 143 rows have missing or empty string `Activities` fields.
+  - **Malformed JSON:** 14 rows contain malformed JSON strings causing `JSONDecodeError`.
+  - **Encoding Artifacts:** Minor special character encoding artifacts (e.g. `caf` instead of `café`).
+
+---
+
+## MSME Pipeline — Ponytail Audit (Phase E)
+
+**Scope Constraint:** Strictly limited to `backend/nic_mapping.py` and `backend/scripts/load_msme.py`.
+
+### 1. Simplification & Over-Engineering Audit Summary
+- **No Heavy Data Frameworks:** Replaced potential `pandas` or `polars` dependencies with standard Python library modules (`csv`, `json`, `sys`, `os`).
+- **Deterministic Pure Dict Lookup:** Implemented 2-digit NIC prefix dictionary mapping with explicit 3/4/5-digit sub-code overrides in `nic_mapping.py`. Avoided ML/embeddings/LLM classification overhead.
+- **In-Memory Streaming Aggregation:** `load_msme.py` processes 165,534 dataset rows in ~1.2s using a Python `dict` key `(pincode, category)`, bypassing complex database staging tables or temporary index files.
+- **Minimal Database Schema:** Single flat table `pincode_business_counts(pincode, category, count)` loaded via standard batch SQL execution.
+
+### 2. Ceiling & Upgrade Declarations (`# ponytail:`)
+- **`backend/nic_mapping.py`**: `# ponytail: static dict lookup for 4 categories; upgrade: database table mapping if taxonomy expands beyond 3 business categories`
+- **`backend/scripts/load_msme.py`**: `# ponytail: in-memory streaming dict aggregation; upgrade: DuckDB/Pandas if dataset grows to millions of rows`
+
+

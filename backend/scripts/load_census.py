@@ -19,6 +19,7 @@ villages_table = Table(
     Column("sub_district", String),
     Column("gram_panchayat", String),
     Column("village", String, index=True),
+    Column("pincode", String, index=True),
     Column("total_households", Integer),
     Column("total_population", Integer),
     Column("sub_district_hq_distance", Float),
@@ -54,7 +55,19 @@ def safe_float(val, default=0.0):
 def safe_str(val, default=""):
     return str(val).strip() if val is not None else default
 
+def clean_pincode(val):
+    if not val:
+        return ""
+    p_str = str(val).strip()
+    if p_str.endswith(".0"):
+        p_str = p_str[:-2]
+    p_str = p_str.zfill(6)
+    if len(p_str) == 6 and p_str.isdigit():
+        return p_str
+    return ""
+
 def load_census_data(raw_dir="data/raw"):
+    villages_table.drop(engine, checkfirst=True)
     metadata.create_all(engine)
     csv_files = glob.glob(os.path.join(raw_dir, "*.csv"))
     if not csv_files:
@@ -69,22 +82,52 @@ def load_census_data(raw_dir="data/raw"):
         for file_path in csv_files:
             print(f"Processing {file_path}...")
             with open(file_path, mode="r", encoding="utf-8-sig") as f:
-                reader = csv.DictReader(f)
+                raw_rows = list(csv.DictReader(f))
+                
+                # Pass 1: Build sub-district -> primary pincode map for missing values
+                sub_dist_pincode_counts = {}
+                for row in raw_rows:
+                    def get_col_p1(col_name):
+                        for k, v in row.items():
+                            if k and k.strip().lower() == col_name.strip().lower():
+                                return v
+                        return ""
+                    sd = safe_str(get_col_p1("Sub District Name"))
+                    pin = clean_pincode(get_col_p1("PIN Code"))
+                    if sd and pin:
+                        if sd not in sub_dist_pincode_counts:
+                            sub_dist_pincode_counts[sd] = {}
+                        sub_dist_pincode_counts[sd][pin] = sub_dist_pincode_counts[sd].get(pin, 0) + 1
+
+                sub_dist_fallback_pin = {}
+                for sd, pcounts in sub_dist_pincode_counts.items():
+                    sorted_pins = sorted(pcounts.items(), key=lambda x: x[1], reverse=True)
+                    if sorted_pins:
+                        sub_dist_fallback_pin[sd] = sorted_pins[0][0]
+
+                # Pass 2: Construct rows
                 rows_to_insert = []
-                for row in reader:
-                    # Header matching (flexible stripping)
+                for row in raw_rows:
                     def get_col(col_name):
                         for k, v in row.items():
                             if k and k.strip().lower() == col_name.strip().lower():
                                 return v
                         return ""
 
+                    sd_name = safe_str(get_col("Sub District Name"))
+                    pin_code = clean_pincode(get_col("PIN Code"))
+                    if not pin_code and sd_name in sub_dist_fallback_pin:
+                        pin_code = sub_dist_fallback_pin[sd_name]
+                    if not pin_code:
+                        pin_code = "no pincode data"
+
                     data = {
                         "state": safe_str(get_col("State Name")),
                         "district": safe_str(get_col("District Name")),
-                        "sub_district": safe_str(get_col("Sub District Name")),
+                        "sub_district": sd_name,
                         "gram_panchayat": safe_str(get_col("Gram Panchayat Name")),
                         "village": safe_str(get_col("Village Name")),
+                        "pincode": pin_code,
                         "total_households": safe_int(get_col("Total  Households ")),
                         "total_population": safe_int(get_col("Total Population of Village")),
                         "sub_district_hq_distance": safe_float(get_col("Sub District Head Quarter (Distance in km)")),

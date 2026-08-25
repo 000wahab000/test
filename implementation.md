@@ -1,4 +1,4 @@
-﻿# Implementation Plan — Hyper-Local Business Feasibility Prototype
+# Implementation Plan — Hyper-Local Business Feasibility Prototype
 
 > Single source of truth: `antigravity_build_spec.md`
 > Do not add anything not listed there.
@@ -195,6 +195,36 @@ bullet groups and a 3-4 sentence narrative.
 
 ---
 
+## MSME Data Pipeline
+
+### Phase A — Inspection & Documentation
+- Inspect full Jalgaon MSME CSV (`data/8b68ae56-84cf-4728-a0a6-1be11028dea7_486885273ba513e60f50451d852a8e23.csv`).
+- Report row count, spot check NIC JSON format consistency across start/middle/end rows.
+- List distinct 2-digit NIC prefixes and row counts.
+- Document findings in `.agents/METHODOLOGY.md`.
+- **STOP gate.**
+
+### Phase B — Deterministic NIC Mapping
+- Static dictionary in `backend/nic_mapping.py` mapping 2-digit NIC prefixes to `dairy`, `retail`, `agro-processing`, or `other`.
+- 10 manual test assertions using real CSV rows verified against NIC descriptions.
+- **STOP gate.**
+
+### Phase C — Pipeline Execution & Aggregation
+- One-time offline loader script `backend/scripts/load_msme.py`.
+- Parse `Activities` JSON, apply NIC mapping from `backend/nic_mapping.py`, group by pincode & category, store in `pincode_business_counts(pincode, category, count)`.
+- Report total rows processed and percentage breakdown across all 4 categories (dairy, retail, agro-processing, other) for the dataset.
+- **STOP gate.**
+
+### Phase D — App Join & Frontend Display
+- Extend village context and `/evaluate` endpoint with registered business count for the village's pincode and selected business category.
+- Frontend display labeled "registered businesses (Udyam/MSME data)".
+- **STOP gate.**
+
+### Phase E — Ponytail Audit
+- Code review, debt audit, and simplification pass on `backend/nic_mapping.py` and `backend/scripts/load_msme.py`.
+
+---
+
 ## What is Explicitly Out of Scope
 
 | Banned | Reason |
@@ -209,3 +239,4 @@ bullet groups and a 3-4 sentence narrative.
 | National census dataset / live scraper | spec §4 |
 | Auth, accounts, dashboard, history | spec §5 |
 | Full ORM (SQLAlchemy models, etc.) | spec §0 |
+

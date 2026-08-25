@@ -114,6 +114,71 @@
 
 ---
 
+## MSME Pipeline — Phase A: Inspection & Documentation
+
+- [x] Report total row count of full Jalgaon MSME CSV
+- [x] Spot check embedded NIC json field format consistency across start, middle, and end rows
+- [x] List distinct 2-digit NIC code prefixes with row counts
+- [x] Document findings in `.agents/METHODOLOGY.md` under "MSME Dataset" section
+- [x] **STOP → report Phase A findings → wait for confirmation**
+
+---
+
+## MSME Pipeline — Phase B: Deterministic NIC Mapping
+
+- [x] Build static dict in `backend/nic_mapping.py` mapping 2-digit NIC prefixes to `dairy`, `retail`, `agro-processing`, or `other`
+- [x] Write 10 manual test assertions using real CSV rows verified against NIC description text
+- [x] Run test assertions (`python backend/nic_mapping.py`)
+- [x] **STOP → show mapping table and test results → wait for confirmation**
+
+---
+
+## MSME Pipeline — Phase C: Pipeline Execution & Database Ingestion
+
+- [x] Write one-time offline loader script `backend/scripts/load_msme.py`
+- [x] Parse `Activities` JSON, map NIC codes via `backend/nic_mapping.py`, group by pincode & category, load into `pincode_business_counts(pincode, category, count)`
+- [x] Run loader script
+- [x] Report total row count processed and percentage breakdown across all 4 categories (dairy, retail, agro-processing, other)
+- [x] **STOP → show sample query output for 3 real pincodes + category breakdown → wait for confirmation**
+
+---
+
+## MSME Pipeline — Phase D: App Integration & Frontend Display
+
+- [x] Add pincode field to village context if needed
+- [x] Extend `/evaluate` endpoint to return registered business count for village pincode + category
+- [x] Update frontend to display registered business count clearly labeled as "registered businesses (Udyam/MSME data)"
+- [x] **STOP → show full end-to-end example → wait for confirmation**
+
+---
+
+## MSME Pipeline — Phase E: Ponytail Audit
+
+- [x] Run ponytail audit/review/debt pass strictly scoped to MSME pipeline files (`backend/nic_mapping.py`, `backend/scripts/load_msme.py`)
+- [x] Append findings to `.agents/METHODOLOGY.md`
+
+---
+
+## Phase F — Pincode Comparison View (Bar Chart)
+
+- [x] Add `GET /pincode-ranking?category=X` endpoint in `backend/main.py`
+- [x] Build horizontal bar chart component in `frontend/src/Report.jsx`
+- [x] Highlight current village's pincode with distinct styling & badge
+- [x] Add clear label: `"[category] business density by pincode across Jalgaon district — your village's pincode: [X], ranked [Nth] of [total]."`
+- [x] **STOP → show rendered chart sample output → wait for confirmation**
+
+---
+
+## Phase G — Geographic Heatmap (Requires Coordinates CSV)
+
+- [ ] Wait for human to provide pincode-to-coordinates CSV in `data/raw/` (no LLM/guessed coords)
+- [ ] One-time loader script joining pincode coordinates to `pincode_business_counts`
+- [ ] Lightweight map view (Leaflet) plotting pincodes sized/colored by business count
+- [ ] Click point → show pincode + count + covered village names
+- [ ] **STOP → show map screenshot → wait for confirmation**
+
+---
+
 ## Completion Check
 
 Before calling this done, verify a user can do the full journey:
@@ -126,7 +191,9 @@ Before calling this done, verify a user can do the full journey:
    - Correct financial structuring (math-derived)
    - Real village context (census-derived)
    - Rule-based fit verdict
+   - Registered business count for village pincode & category (Udyam/MSME data)
    - LLM narrative grounded only in those facts
 6. See disclaimer at bottom
 
 If any step fails, fix that phase before moving on.
+

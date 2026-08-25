@@ -46,6 +46,7 @@ from pydantic import BaseModel
 from backend.finance import project_cost, select_scheme, loan_amount, repayment_schedule
 from backend.fit import check_fit
 from backend.narrative import generate_narrative
+from backend.category_mapping import map_category
 
 class EvaluateRequest(BaseModel):
     state: str
@@ -84,16 +85,35 @@ def evaluate_feasibility(req: EvaluateRequest):
             raise HTTPException(status_code=404, detail="Selected village not found in census database.")
         
         village_data = dict(row)
+        mapped_cat = map_category(req.business_category)
         village_data["business_category"] = req.business_category
         
+        # Ensure pincode is explicitly non-empty
+        pincode = village_data.get("pincode", "")
+        if not pincode or pincode.strip() == "":
+            pincode = "no pincode data"
+            village_data["pincode"] = pincode
+
+        # MSME Data Lookup
+        msme_count = 0
+        if pincode and pincode != "no pincode data":
+            msme_row = conn.execute(
+                text("SELECT count FROM pincode_business_counts WHERE pincode = :pincode AND category = :category"),
+                {"pincode": pincode, "category": mapped_cat}
+            ).fetchone()
+            if msme_row:
+                msme_count = msme_row[0]
+        
+        village_data["registered_business_count"] = msme_count
+
         # Financial Engine
         pc = project_cost(req.capital)
         scheme = select_scheme(pc)
         loan = loan_amount(pc)
         schedule = repayment_schedule(loan, scheme)
         
-        # Fit Scoring
-        fit_res = check_fit(req.business_category, village_data)
+        # Fit Scoring (uses mapped backend category key)
+        fit_res = check_fit(mapped_cat, village_data)
         
         return {
             "input": {
@@ -122,3 +142,18 @@ def get_ai_narrative(req: NarrativeRequest):
         fit_result=req.fit_result,
         language=req.language or "en"
     )
+
+@app.get("/pincode-ranking")
+def get_pincode_ranking(category: str = Query(...)):
+    mapped_cat = map_category(category)
+    with engine.connect() as conn:
+        query = text("""
+            SELECT pincode, count 
+            FROM pincode_business_counts 
+            WHERE LOWER(category) = LOWER(:category) 
+            ORDER BY count DESC
+        """)
+        rows = conn.execute(query, {"category": mapped_cat}).mappings().all()
+        return [dict(r) for r in rows]
+
+

@@ -1,5 +1,4 @@
 import React from 'react'
-import VicinityHeatmap from './VicinityHeatmap'
 import SchemeCarousel from './SchemeCarousel'
 
 export default function LandingPage({ onGoToForm, onThemeClick }) {
@@ -161,11 +160,6 @@ export default function LandingPage({ onGoToForm, onThemeClick }) {
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Vicinity Heatmap Simulation Section */}
-      <section id="heatmap" className="py-16 px-4 max-w-7xl mx-auto">
-        <VicinityHeatmap />
       </section>
 
       {/* 4 Pillars Ribbon */}
