@@ -44,15 +44,12 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
   const [narrativeData, setNarrativeData] = useState(null)
   const [loadingNarrative, setLoadingNarrative] = useState(false)
 
-<<<<<<< ours
   const selectedSchemeObj = SC_SCHEMES.find(s => s.name === input.government_scheme) || {
     name: input.government_scheme || 'No SC Scheme Selected',
     criteria: 'Eligibility rules apply'
   }
-=======
   const [rankingData, setRankingData] = useState([])
   const [loadingRanking, setLoadingRanking] = useState(false)
->>>>>>> theirs
 
   useEffect(() => {
     fetchNarrative(language)
