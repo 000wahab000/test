@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { SC_SCHEMES } from './scSchemes'
 
 function Tooltip({ text }) {
   return (
@@ -41,6 +42,11 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
   const [language, setLanguage] = useState('en')
   const [narrativeData, setNarrativeData] = useState(null)
   const [loadingNarrative, setLoadingNarrative] = useState(false)
+
+  const selectedSchemeObj = SC_SCHEMES.find(s => s.name === input.government_scheme) || {
+    name: input.government_scheme || 'No SC Scheme Selected',
+    criteria: 'Eligibility rules apply'
+  }
 
   useEffect(() => {
     fetchNarrative(language)
@@ -595,6 +601,54 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
                   </div>
                 </div>
               ) : null}
+            </div>
+          )}
+
+          {/* TAB 4: GOVERNMENT SCHEMES */}
+          {(activeTab === 'overview' || activeTab === 'schemes') && (
+            <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-200 shadow-sm space-y-6">
+              <div className="border-b border-slate-100 pb-4 flex items-center justify-between">
+                <h3 className="text-lg font-black text-slate-900 flex items-center space-x-2">
+                  <span>🏛️ Government Schemes (SC Category)</span>
+                </h3>
+                <span className="text-xs font-bold text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                  Targeted SC Support
+                </span>
+              </div>
+
+              {/* Selected Scheme Card */}
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50/50 p-6 rounded-2xl border-2 border-amber-300 shadow-xs space-y-3">
+                <span className="text-[10px] font-black text-amber-800 uppercase tracking-wider block">SELECTED SC SCHEME</span>
+                <h4 className="text-xl font-black text-slate-900 leading-snug">
+                  {selectedSchemeObj.name}
+                </h4>
+                <div className="flex items-center space-x-2 pt-1">
+                  <span className="text-xs font-black bg-white text-amber-900 border border-amber-300 px-3.5 py-1 rounded-full shadow-xs animate-none">
+                    Income Limit / Criteria: {selectedSchemeObj.criteria}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 font-medium pt-2 border-t border-amber-200">
+                  ℹ️ Eligibility and income limits vary by scheme and state — verify on the Gov. Schemes section.
+                </p>
+              </div>
+
+              {/* Other SC Schemes Listing */}
+              {activeTab === 'schemes' && (
+                <div className="space-y-4 pt-2">
+                  <h4 className="text-sm font-black text-slate-900 uppercase tracking-wider">Other Applicable SC Category Schemes</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {SC_SCHEMES.filter(s => s.name !== selectedSchemeObj.name).map((sch) => (
+                      <div key={sch.id} className="bg-slate-50 p-4.5 rounded-2xl border border-slate-200/90 shadow-2xs space-y-2 hover:border-slate-300 hover:bg-slate-100/50 transition-all">
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block">SCHEME ALTERNATIVE</span>
+                        <h5 className="text-sm font-black text-slate-800 leading-snug">{sch.name}</h5>
+                        <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-block mt-1">
+                          {sch.criteria}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
