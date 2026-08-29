@@ -22,7 +22,7 @@ THRESHOLD_CAUTION = 55
 
 
 def check_fit(business_category: str, village_data: dict, capital: float = 100000.0) -> dict:
-    cat = raw_cat.lower()
+    cat = business_category.lower()
 
     dairy_keywords = ["dairy", "milk", "cattle", "poultry", "goat", "fish", "livestock", "animal", "husbandry"]
     agro_keywords = ["agro", "mill", "flour", "spice", "oil", "seed", "processing", "bakery", "food", "confectionery", "atta", "fertilizer"]
