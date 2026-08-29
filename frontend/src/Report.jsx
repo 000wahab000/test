@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react'
-<<<<<<< HEAD
 import PincodeMap from './PincodeMap'
-=======
 import { SC_SCHEMES } from './scSchemes'
->>>>>>> ea0d6a16543548e956427a1b12039f07b1c85fe7
 
 function Tooltip({ text }) {
   return (
@@ -17,7 +14,6 @@ function Tooltip({ text }) {
   )
 }
 
-<<<<<<< HEAD
 function DistanceBadge({ distance }) {
   const dist = parseFloat(distance || 0)
   let badgeColor = 'bg-emerald-50 text-emerald-800 border-emerald-300'
@@ -49,8 +45,6 @@ function getOrdinal(n) {
   return n + (s[(v - 20) % 10] || s[v] || s[0])
 }
 
-=======
->>>>>>> ea0d6a16543548e956427a1b12039f07b1c85fe7
 export default function Report({ data, onBack, onBackToLanding, onCheckAnother }) {
   if (!data) return null
 
@@ -69,11 +63,11 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
   }
   const [rankingData, setRankingData] = useState([])
   const [loadingRanking, setLoadingRanking] = useState(false)
+  
   useEffect(() => {
     fetchNarrative(language)
   }, [language, data])
 
-<<<<<<< HEAD
   useEffect(() => {
     if (input?.business_category) {
       setLoadingRanking(true)
@@ -85,8 +79,6 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
     }
   }, [input?.business_category])
 
-=======
->>>>>>> ea0d6a16543548e956427a1b12039f07b1c85fe7
   const fetchNarrative = (lang) => {
     setLoadingNarrative(true)
     fetch('http://localhost:8000/narrative', {
@@ -105,14 +97,13 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
       .finally(() => setLoadingNarrative(false))
   }
 
-<<<<<<< HEAD
   const fitBadgeConfig = FIT_BADGE_CONFIG[fit_result?.fit] || { color: 'bg-slate-100 text-slate-900 border-slate-300', text: (fit_result?.fit || '').toUpperCase(), icon: '🔍' }
-=======
+
   // Scoring engine extract
-  const score = fit_result.score || 78
-  const verdict = fit_result.verdict || 'RECOMMENDED'
-  const verdictIcon = fit_result.verdict_icon || '🟢'
-  const components = fit_result.components || {
+  const score = fit_result?.score || 78
+  const verdict = fit_result?.verdict || 'RECOMMENDED'
+  const verdictIcon = fit_result?.verdict_icon || '🟢'
+  const components = fit_result?.components || {
     competition: { score: 82, status: 'LOW COMPETITION', detail: 'Low competitor count nearby', units: 2 },
     demand: { score: 86, status: 'HIGH DEMAND', detail: 'Strong local market access' },
     customer_base: { score: 80, status: 'HIGH REACH', detail: 'Substantial village population' },
@@ -122,11 +113,11 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
     government_support: { score: 90, status: 'HIGH SUPPORT', detail: '90% scheme credit eligible' }
   }
 
-  const saturation = fit_result.saturation || { level: 'LOW', detail: 'Only a small number of similar businesses were identified in the area.' }
-  const positives = fit_result.positives || fit_result.why_succeed || ['✓ Low direct competition in local area', '✓ Strong market demand', '✓ Eligible for up to 90% government scheme loan']
-  const negatives = fit_result.negatives || fit_result.why_fail || ['⚠️ High initial loan leverage relative to own capital']
-  const confidence = fit_result.data_confidence || { level: 'High', disclaimer: 'Analysis confidence depends on local market data quality.' }
-  const explanation = fit_result.score_explanation || { main_positive: ['+ Strong market demand', '+ Low competition'], main_negative: ['- Debt dependency'] }
+  const saturation = fit_result?.saturation || { level: 'LOW', detail: 'Only a small number of similar businesses were identified in the area.' }
+  const positives = fit_result?.positives || fit_result?.why_succeed || ['✓ Low direct competition in local area', '✓ Strong market demand', '✓ Eligible for up to 90% government scheme loan']
+  const negatives = fit_result?.negatives || fit_result?.why_fail || ['⚠️ High initial loan leverage relative to own capital']
+  const confidence = fit_result?.data_confidence || { level: 'High', disclaimer: 'Analysis confidence depends on local market data quality.' }
+  const explanation = fit_result?.score_explanation || { main_positive: ['+ Strong market demand', '+ Low competition'], main_negative: ['- Debt dependency'] }
 
   const verdictBadgeColor =
     verdict === 'RECOMMENDED'
@@ -134,7 +125,6 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
       : verdict === 'PROCEED WITH CAUTION'
       ? 'bg-amber-100 text-amber-900 border-amber-300'
       : 'bg-rose-100 text-rose-900 border-rose-300'
->>>>>>> ea0d6a16543548e956427a1b12039f07b1c85fe7
 
   const moratoriumQuarters = Math.floor(scheme.moratorium_months / 3)
 
@@ -758,7 +748,6 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
                   </div>
                 </div>
               </div>
-<<<<<<< HEAD
 
               {/* Registered MSME Business Density Ranking Across Pincodes */}
               {(() => {
@@ -831,8 +820,6 @@ export default function Report({ data, onBack, onBackToLanding, onCheckAnother }
                   currentPincode={village_context?.pincode}
                 />
               </div>
-=======
->>>>>>> ea0d6a16543548e956427a1b12039f07b1c85fe7
             </div>
           </div>
         )}

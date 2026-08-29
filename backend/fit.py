@@ -22,18 +22,6 @@ THRESHOLD_CAUTION = 55
 
 
 def check_fit(business_category: str, village_data: dict, capital: float = 100000.0) -> dict:
-    raw_cat = (business_category or "Retail").strip()
-<<<<<<< HEAD
-    cat_type = raw_cat.lower()
-    if cat_type not in ("dairy", "agro-processing", "retail"):
-        if any(k in cat_type for k in ["dairy", "milk", "cattle", "poultry", "goat", "fish", "livestock", "husbandry"]):
-            cat_type = "dairy"
-        elif any(k in cat_type for k in ["agro", "mill", "flour", "spice", "oil", "processing", "bakery", "food", "confectionery"]):
-            cat_type = "agro-processing"
-        else:
-            cat_type = "retail"
-    
-=======
     cat = raw_cat.lower()
 
     dairy_keywords = ["dairy", "milk", "cattle", "poultry", "goat", "fish", "livestock", "animal", "husbandry"]
@@ -46,7 +34,6 @@ def check_fit(business_category: str, village_data: dict, capital: float = 10000
     else:
         cat_type = "retail"
 
->>>>>>> ea0d6a16543548e956427a1b12039f07b1c85fe7
     irrigated = float(village_data.get("irrigated_area", 0) or 0)
     net_sown = float(village_data.get("net_area_sown", 0) or 0)
     population = float(village_data.get("total_population", 0) or 0)
