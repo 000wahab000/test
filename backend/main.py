@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
-from backend.db import engine
+from db import engine
 
 app = FastAPI(title="Hyper-Local Business Feasibility API")
 
