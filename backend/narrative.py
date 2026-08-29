@@ -293,7 +293,7 @@ FACTS:
 if __name__ == "__main__":
     import sys
     sys.stdout.reconfigure(encoding='utf-8')
-    from backend.fit import check_fit
+    from fit import check_fit
     import sqlite3
 
     conn = sqlite3.connect("feasibility.db")

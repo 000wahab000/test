@@ -6,7 +6,7 @@ from sqlalchemy import Table, Column, Integer, Float, String, MetaData, select
 
 # Add parent dir to path so backend imports work
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-from backend.db import engine
+from db import engine
 
 metadata = MetaData()
 

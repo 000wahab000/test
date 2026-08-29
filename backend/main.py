@@ -43,10 +43,10 @@ def get_village(
         return dict(row)
 
 from pydantic import BaseModel
-from backend.finance import project_cost, select_scheme, loan_amount, repayment_schedule
-from backend.fit import check_fit
-from backend.narrative import generate_narrative
-from backend.category_mapping import map_category
+from finance import project_cost, select_scheme, loan_amount, repayment_schedule
+from fit import check_fit
+from narrative import generate_narrative
+from category_mapping import map_category
 
 class EvaluateRequest(BaseModel):
     state: str
